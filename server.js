@@ -1,40 +1,104 @@
-var express= require("express");
-//var mongojs= require("mongojs");
-var axios= require("axios");
-var cheerio=require("cheerio");
-//var mongoose=require("mongoose");
-//var exphbs = require("express-handlebars");
+var express = require("express");
+var axios = require("axios");
+var cheerio = require("cheerio");
+var mongoose = require("mongoose");
+var exphbs = require("express-handlebars");
 
-//var PORT=3000;
+var PORT = 8080;
+var db = require("./models");
+var app = express();
 
-//var User = require
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-console.log("\n----------------------------------\n"+
-                "----------------------------------\n"+
-                "--------------------------------------\ngrabbing right now");
+app.engine("handlebars", exphbs({ defaultLayout:"main" }));
+app.set("view engine", "handlebars");
 
-axios.get("https://www.nytimes.com/").then(function(response){
-    //console.log(response.data)
-    var $ = cheerio.load(response.data);
+// Connect to the Mongo DB
+mongoose.connect("mongodb://localhost/scrapedDb", { useNewUrlParser: true });
+console.log("\n----------------------------------\n" +
+    "----------------------------------\n" +
+    "--------------------------------------\ngrabbing right now");
+app.get("/scrape", function (req, res) {
+    db.News.find({}).then(function(currentNews){
+        let currentTitle= currentNews.map(function(news){
+             return news.title;
+        });
+    
 
-    var results = [];
-    $("article.css-8atqhb").each(function(i, element) {
-       //console.log(element);
-        //var objNews=$(element).find("article.css-8atqhb");
-       // Save the text of the element in a "title" variable
-   var title = $(element).text();
-//console.log(objNews);
-    // In the currently selected element, look at its child elements (i.e., its a-tags),
-    // then save the values for any "href" attributes that the child elements may have
-    var link = $(element).children().find("a").attr("href");
-    var addLink="https://www.nytimes.com"+link;
-    // Save these results in an object that we'll push into the results array we defined earlier
-    results.push({
-      title: title,
-      link: addLink
+    axios.get("https://www.nytimes.com/").then(function (response) {
+        //console.log(response.data)
+        var $ = cheerio.load(response.data);
+        var articleArr=[];
+    
+        $("article.css-8atqhb").each(function (i, element) {
+            var results = {};
+
+            var title = $(element).text();
+            var link = $(element).children().find("a").attr("href");
+            var addLink = "https://www.nytimes.com" + link;
+
+            results.title = title;
+            results.link = addLink;
+
+if(results.title){
+    if(!currentTitle.includes(results.title)){
+        articleArr.push(results);
+    }
+}
+});
+console.log(articleArr);
+
+            db.News.create(articleArr)
+                .then(function (dbNews) {
+                    console.log(dbNews);
+                    res.render("index", { dbNews });
+
+                })
+                .catch(function (err) {
+                    // If an error occurred, log it
+                    console.log(err);
+                });
+
+        
+    });
     });
 
 });
 
-console.log(results);
+app.get("/", function (req, res) {
+    // Grab every document in the Articles collection
+    db.News.find({})
+        .then(function (dbNews) {
+            // If we were able to successfully find Articles, send them back to the client
+            res.render("index", { dbNews });
+            //console.log(dbNews);
+        })
+        .catch(function (err) {
+            // If an error occurred, send it to the client
+            res.json(err);
+        });
 });
+
+
+
+app.get("/clear", function (req, res) {
+    // Grab every document in the Articles collection
+    db.News.deleteMany({})
+        .then(function (dbNews) {
+            // If we were able to successfully find Articles, send them back to the client
+            res.render("index", { dbNews });
+            //console.log(dbNews);
+        })
+        .catch(function (err) {
+            // If an error occurred, send it to the client
+            res.json(err);
+        });
+});
+
+
+
+app.listen(PORT, function () {
+    console.log("App running on port " + PORT + "!");
+});
+
