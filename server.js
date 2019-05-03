@@ -15,7 +15,7 @@ app.engine("handlebars", exphbs({ defaultLayout:"main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI);
 console.log("\n----------------------------------\n" +
     "----------------------------------\n" +
     "--------------------------------------\ngrabbing right now");
