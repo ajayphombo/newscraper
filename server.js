@@ -3,8 +3,8 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 var mongoose = require("mongoose");
 var exphbs = require("express-handlebars");
-
-var PORT = 8080;
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/scrapedDb";
+var PORT = 3000;
 var db = require("./models");
 var app = express();
 
@@ -15,7 +15,7 @@ app.engine("handlebars", exphbs({ defaultLayout:"main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/scrapedDb", { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 console.log("\n----------------------------------\n" +
     "----------------------------------\n" +
     "--------------------------------------\ngrabbing right now");
