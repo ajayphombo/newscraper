@@ -1,6 +1,28 @@
+<div>
+  <a href="/" style="text-decoration: none"><h1 class="jumbotron">newScraper</h1></a>
+  <nav class="navbar navbar-light bg-light">
+  <form class="form-inline">
+    <a href="/scrape"><button class="btn btn-outline-success" type="button">Scrape</button></a>
+    <a href="/clear"><button class="btn btn-outline-success" type="button">Clear All Articles</button></a>
+  </form>
+</nav>
+</div>
 
-{{#each dbNews}}
-  <p>title: {{title}}</p>
-  <p href={{link}}>link:{{link}} </p>
-  <hr>
-{{/each}}
+<div class="row">
+  <div class="col-lg-1">
+
+    </div>
+
+      <div class="col-lg-10">
+      {{#each dbNews}}
+          
+          <a href="{{link}}" style="text-decoration: none"><p>{{title}}</p></a>
+          <hr>
+      {{/each}}
+
+      </div>
+    <div class="col-lg-1">
+          </div>
+
+
+</div>

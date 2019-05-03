@@ -47,16 +47,13 @@ if(results.title){
     }
 }
 });
-console.log(articleArr);
 
             db.News.create(articleArr)
                 .then(function (dbNews) {
-                    console.log(dbNews);
                     res.render("index", { dbNews });
 
                 })
                 .catch(function (err) {
-                    // If an error occurred, log it
                     console.log(err);
                 });
 
@@ -87,7 +84,7 @@ app.get("/clear", function (req, res) {
     db.News.deleteMany({})
         .then(function (dbNews) {
             // If we were able to successfully find Articles, send them back to the client
-            res.render("index", { dbNews });
+            res.redirect("/");
             //console.log(dbNews);
         })
         .catch(function (err) {
