@@ -4,7 +4,7 @@ var cheerio = require("cheerio");
 var mongoose = require("mongoose");
 var exphbs = require("express-handlebars");
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/scrapedDb";
-var PORT = 8080;
+var PORT = process.env.PORT||8080;
 var db = require("./models");
 var app = express();
 
